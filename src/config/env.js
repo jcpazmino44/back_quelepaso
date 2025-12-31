@@ -14,11 +14,8 @@ module.exports = {
   nodeEnv: getEnv('NODE_ENV', 'development'),
   port: parseInt(getEnv('PORT', '3000'), 10),
   db: {
-    host: getEnv('DB_HOST', 'localhost'),
-    port: parseInt(getEnv('DB_PORT', '3306'), 10),
-    user: getEnv('DB_USER', 'root'),
-    password: getEnv('DB_PASSWORD', ''),
-    name: getEnv('DB_NAME', 'quelepaso')
+    url: getEnv('DATABASE_URL', ''),
+    ssl: getEnv('DB_SSL', 'true') === 'true' ? { rejectUnauthorized: false } : false
   },
   jwt: {
     secret: getEnv('JWT_SECRET', 'change_me'),

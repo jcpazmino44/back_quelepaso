@@ -8,8 +8,8 @@ const create = async ({
   possible_cause,
   risk_level
 }) => {
-  const [result] = await db.query(
-    'INSERT INTO diagnostics (user_id, category, input_text, image_url, possible_cause, risk_level) VALUES (?, ?, ?, ?, ?, ?)',
+  const result = await db.query(
+    'INSERT INTO diagnostics (user_id, category, input_text, image_url, possible_cause, risk_level) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
     [
       user_id || null,
       category,
@@ -19,15 +19,15 @@ const create = async ({
       risk_level
     ]
   );
-  return result.insertId;
+  return result.rows[0]?.id ?? null;
 };
 
 const findById = async (id) => {
-  const [rows] = await db.query(
-    'SELECT id, possible_cause, risk_level, created_at FROM diagnostics WHERE id = ? LIMIT 1',
+  const result = await db.query(
+    'SELECT id, possible_cause, risk_level, created_at FROM diagnostics WHERE id = $1 LIMIT 1',
     [id]
   );
-  return rows[0] || null;
+  return result.rows[0] || null;
 };
 
 module.exports = {
