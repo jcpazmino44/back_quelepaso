@@ -1,18 +1,25 @@
 const diagnosticModel = require('../models/diagnostic.model');
 
+const normalizeCategory = (value) => {
+  const key = String(value || '').toLowerCase().trim();
+  if (key === 'electro') return 'electrodomesticos';
+  return key;
+};
+
 const createDiagnostic = async ({ userId, category, inputText, imageUrl }) => {
-  if (!category) {
+  const normalizedCategory = normalizeCategory(category);
+  if (!normalizedCategory) {
     const error = new Error('category is required');
     error.status = 400;
     throw error;
   }
 
-  const possibleCause = `Diagnostico preliminar para categoria: ${category}`;
+  const possibleCause = `Diagnostico preliminar para categoria: ${normalizedCategory}`;
   const riskLevel = 'bajo';
 
   const id = await diagnosticModel.create({
     user_id: userId || null,
-    category,
+    category: normalizedCategory,
     input_text: inputText || null,
     image_url: imageUrl || null,
     possible_cause: possibleCause,
