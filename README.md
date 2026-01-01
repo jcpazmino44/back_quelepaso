@@ -50,3 +50,11 @@ Notas rapidas para front:
 
 la URL correcta del backend es:
 http://10.0.2.2:3000
+
+## Migracion a Postgres para utilizar Render
+Tareas realizadas:
+- Cambiar el driver MySQL → PostgreSQL (`mysql2` por `pg`).
+- Ajustar la conexion para usar `DATABASE_URL` y SSL (requerido por Render).
+- Actualizar consultas para usar placeholders `$1` y `active = true`.
+- Ajustar inserts para usar `RETURNING id` en lugar de `insertId`.
+- Actualizar variables de entorno locales para Postgres.
