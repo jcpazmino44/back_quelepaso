@@ -20,5 +20,6 @@ module.exports = {
   jwt: {
     secret: getEnv('JWT_SECRET', 'change_me'),
     expiresIn: getEnv('JWT_EXPIRES_IN', '1d')
-  }
+  },
+  metricsApiKey: getEnv('METRICS_API_KEY', '')
 };
