@@ -24,6 +24,11 @@ const DIAGNOSTIC_RULES = {
       cause: 'Fuga en union o empaque deteriorado.'
     },
     {
+      keywords: ['fuga leve'],
+      riskLevel: 'bajo',
+      cause: 'Fuga menor o sello con desgaste leve.'
+    },
+    {
       keywords: ['no sale agua', 'baja presion'],
       riskLevel: 'medio',
       cause: 'Obstruccion parcial o valvula cerrada.'
