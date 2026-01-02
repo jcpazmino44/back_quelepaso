@@ -1,6 +1,7 @@
 const dotenv = require('dotenv');
 
 dotenv.config();
+console.log('METRICS_API_KEY:', process.env.METRICS_API_KEY);
 
 const getEnv = (key, fallback) => {
   const value = process.env[key];
