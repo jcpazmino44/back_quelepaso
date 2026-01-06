@@ -24,7 +24,7 @@ const create = async ({
 
 const findById = async (id) => {
   const result = await db.query(
-    'SELECT id, possible_cause, risk_level, created_at FROM diagnostics WHERE id = $1 LIMIT 1',
+    'SELECT id, category_id, possible_cause, risk_level, created_at FROM diagnostics WHERE id = $1 LIMIT 1',
     [id]
   );
   return result.rows[0] || null;

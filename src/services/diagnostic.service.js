@@ -120,6 +120,23 @@ const DIAGNOSTIC_RULES = {
   ]
 };
 
+const RISK_MAP = {
+  bajo: {
+    label: 'Riesgo bajo',
+    detail: 'Puedes intentar resolverlo con cuidado.'
+  },
+  medio: {
+    label: 'Riesgo medio',
+    detail: 'El problema requiere atencion para evitar danos mayores.'
+  },
+  alto: {
+    label: 'Riesgo alto',
+    detail: 'No intervengas. Lo mas seguro es contactar a un tecnico.'
+  }
+};
+
+const DEFAULT_NOTE = 'Este diagnostico es orientativo y no reemplaza a un tecnico.';
+
 const resolveDiagnostic = (category, inputText) => {
   const rules = DIAGNOSTIC_RULES[category] || [];
   const text = normalizeText(inputText);
@@ -185,7 +202,23 @@ const createDiagnostic = async ({ userId, categoryId, categorySlug, inputText, i
     throw error;
   }
 
-  return record;
+  const trimmedInput = String(inputText || '').trim();
+  const riskInfo = RISK_MAP[riskLevel] || {
+    label: 'Riesgo medio',
+    detail: 'El problema requiere atencion para evitar danos mayores.'
+  };
+
+  return {
+    ...record,
+    category_slug: categoryRecord.slug,
+    category_info: categoryRecord,
+    risk_label: riskInfo.label,
+    risk_detail: riskInfo.detail,
+    summary_title: trimmedInput || `Problema de ${categoryRecord.name}`,
+    summary_tag: categoryRecord.name,
+    summary_image_url: categoryRecord.image_url || null,
+    note: DEFAULT_NOTE
+  };
 };
 
 module.exports = {

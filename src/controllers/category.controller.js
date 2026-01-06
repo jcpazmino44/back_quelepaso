@@ -19,6 +19,7 @@ const list = async (req, res, next) => {
         name: item.name,
         description: item.description,
         icon: item.icon,
+        imageUrl: item.image_url,
         tintColor: item.tint_color,
         bgColor: item.bg_color,
         isQuick: item.is_quick,

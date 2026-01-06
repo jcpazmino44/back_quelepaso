@@ -7,6 +7,7 @@ const baseSelect = `
     name,
     description,
     icon,
+    image_url,
     tint_color,
     bg_color,
     is_quick,
