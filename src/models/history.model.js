@@ -2,7 +2,23 @@ const db = require('../config/db');
 
 const findByUserId = async (userId) => {
   const result = await db.query(
-    'SELECT id, title, category, status, created_at FROM history WHERE user_id = $1 ORDER BY created_at DESC',
+    `
+      SELECT
+        h.id,
+        h.title,
+        h.status,
+        h.created_at,
+        h.category_id,
+        c.slug AS category_slug,
+        c.name AS category_name,
+        c.icon AS category_icon,
+        c.tint_color AS category_tint_color,
+        c.bg_color AS category_bg_color
+      FROM history h
+      LEFT JOIN categories c ON c.id = h.category_id
+      WHERE h.user_id = $1
+      ORDER BY h.created_at DESC
+    `,
     [userId]
   );
   return result.rows;
@@ -10,7 +26,22 @@ const findByUserId = async (userId) => {
 
 const findAll = async () => {
   const result = await db.query(
-    'SELECT id, title, category, status, created_at FROM history ORDER BY created_at DESC'
+    `
+      SELECT
+        h.id,
+        h.title,
+        h.status,
+        h.created_at,
+        h.category_id,
+        c.slug AS category_slug,
+        c.name AS category_name,
+        c.icon AS category_icon,
+        c.tint_color AS category_tint_color,
+        c.bg_color AS category_bg_color
+      FROM history h
+      LEFT JOIN categories c ON c.id = h.category_id
+      ORDER BY h.created_at DESC
+    `
   );
   return result.rows;
 };

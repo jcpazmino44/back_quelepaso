@@ -8,7 +8,18 @@ const list = async (req, res, next) => {
       history.map((item) => ({
         id: item.id,
         title: item.title,
-        category: item.category,
+        categoryId: item.category_id,
+        category: item.category_slug,
+        categoryInfo: item.category_slug
+          ? {
+            id: item.category_id,
+            slug: item.category_slug,
+            name: item.category_name,
+            icon: item.category_icon,
+            tintColor: item.category_tint_color,
+            bgColor: item.category_bg_color
+          }
+          : null,
         status: item.status,
         createdAt: item.created_at
       }))

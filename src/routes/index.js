@@ -1,6 +1,7 @@
 const express = require('express');
 
 const authRoutes = require('./auth.routes');
+const categoryRoutes = require('./category.routes');
 const deviceRoutes = require('./device.routes');
 const diagnosticRoutes = require('./diagnostic.routes');
 const eventRoutes = require('./event.routes');
@@ -12,6 +13,7 @@ const technicianRoutes = require('./technician.routes');
 const router = express.Router();
 
 router.use('/auth', authRoutes);
+router.use('/categories', categoryRoutes);
 router.use('/devices', deviceRoutes);
 router.use('/diagnostics', diagnosticRoutes);
 router.use('/events', eventRoutes);

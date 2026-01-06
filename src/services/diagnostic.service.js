@@ -1,4 +1,5 @@
 const diagnosticModel = require('../models/diagnostic.model');
+const categoryModel = require('../models/category.model');
 
 const normalizeText = (value) =>
   String(value || '')
@@ -135,14 +136,31 @@ const resolveDiagnostic = (category, inputText) => {
   };
 };
 
-const createDiagnostic = async ({ userId, category, inputText, imageUrl }) => {
-  const normalizedCategory = normalizeCategory(category);
-  if (!normalizedCategory) {
+const resolveCategory = async ({ categoryId, categorySlug }) => {
+  if (categoryId) {
+    return categoryModel.findById(categoryId);
+  }
+  if (categorySlug) {
+    return categoryModel.findBySlug(normalizeCategory(categorySlug));
+  }
+  return null;
+};
+
+const createDiagnostic = async ({ userId, categoryId, categorySlug, inputText, imageUrl }) => {
+  const categoryRecord = await resolveCategory({ categoryId, categorySlug });
+  if (!categoryRecord) {
     const error = new Error('category is required');
     error.status = 400;
     throw error;
   }
 
+  if (categoryRecord.is_active === false) {
+    const error = new Error('category is inactive');
+    error.status = 400;
+    throw error;
+  }
+
+  const normalizedCategory = normalizeCategory(categoryRecord.slug);
   if (!DIAGNOSTIC_RULES[normalizedCategory]) {
     const error = new Error('category is invalid');
     error.status = 400;
@@ -153,7 +171,7 @@ const createDiagnostic = async ({ userId, category, inputText, imageUrl }) => {
 
   const id = await diagnosticModel.create({
     user_id: userId || null,
-    category: normalizedCategory,
+    category_id: categoryRecord.id,
     input_text: inputText || null,
     image_url: imageUrl || null,
     possible_cause: possibleCause,
