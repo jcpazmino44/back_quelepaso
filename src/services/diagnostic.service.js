@@ -1,5 +1,6 @@
 const diagnosticModel = require('../models/diagnostic.model');
 const categoryModel = require('../models/category.model');
+const guideModel = require('../models/guide.model');
 
 const normalizeText = (value) =>
   String(value || '')
@@ -163,7 +164,26 @@ const resolveCategory = async ({ categoryId, categorySlug }) => {
   return null;
 };
 
-const createDiagnostic = async ({ userId, categoryId, categorySlug, inputText, imageUrl }) => {
+const resolveGuide = async ({ guideId, guideSlug }) => {
+  if (guideId) {
+    return { id: guideId };
+  }
+  if (guideSlug) {
+    const guide = await guideModel.findBySlug({ slug: guideSlug, isActive: true });
+    return guide ? { id: guide.id, slug: guide.slug } : null;
+  }
+  return null;
+};
+
+const createDiagnostic = async ({
+  userId,
+  categoryId,
+  categorySlug,
+  inputText,
+  imageUrl,
+  guideId,
+  guideSlug
+}) => {
   const categoryRecord = await resolveCategory({ categoryId, categorySlug });
   if (!categoryRecord) {
     const error = new Error('category is required');
@@ -186,9 +206,17 @@ const createDiagnostic = async ({ userId, categoryId, categorySlug, inputText, i
 
   const { riskLevel, possibleCause } = resolveDiagnostic(normalizedCategory, inputText);
 
+  const guideRecord = await resolveGuide({ guideId, guideSlug });
+  if ((guideId || guideSlug) && !guideRecord) {
+    const error = new Error('guide is invalid');
+    error.status = 400;
+    throw error;
+  }
+
   const id = await diagnosticModel.create({
     user_id: userId || null,
     category_id: categoryRecord.id,
+    guide_id: guideRecord ? guideRecord.id : null,
     input_text: inputText || null,
     image_url: imageUrl || null,
     possible_cause: possibleCause,
@@ -212,6 +240,7 @@ const createDiagnostic = async ({ userId, categoryId, categorySlug, inputText, i
     ...record,
     category_slug: categoryRecord.slug,
     category_info: categoryRecord,
+    guide_slug: guideRecord ? guideRecord.slug : record.guide_slug || null,
     risk_label: riskInfo.label,
     risk_detail: riskInfo.detail,
     summary_title: trimmedInput || `Problema de ${categoryRecord.name}`,

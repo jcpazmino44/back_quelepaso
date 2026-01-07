@@ -10,16 +10,24 @@ const create = async (req, res, next) => {
       category_slug,
       inputText,
       imageUrl,
-      userId
+      userId,
+      guideId,
+      guide_id,
+      guideSlug,
+      guide_slug
     } = req.body;
     const resolvedCategoryId = categoryId || category_id || null;
     const resolvedCategorySlug = categorySlug || category_slug || category || null;
+    const resolvedGuideId = guideId || guide_id || null;
+    const resolvedGuideSlug = guideSlug || guide_slug || null;
     const record = await diagnosticService.createDiagnostic({
       categoryId: resolvedCategoryId,
       categorySlug: resolvedCategorySlug,
       inputText,
       imageUrl,
-      userId
+      userId,
+      guideId: resolvedGuideId,
+      guideSlug: resolvedGuideSlug
     });
 
     res.status(201).json({
@@ -37,6 +45,7 @@ const create = async (req, res, next) => {
           imageUrl: record.category_info.image_url
         }
         : null,
+      guideSlug: record.guide_slug || null,
       possibleCause: record.possible_cause,
       riskLevel: record.risk_level,
       riskLabel: record.risk_label,

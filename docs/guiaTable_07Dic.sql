@@ -278,3 +278,14 @@ CREATE TRIGGER trg_guide_tools_updated_at
 BEFORE UPDATE ON public.guide_tools
 FOR EACH ROW
 EXECUTE FUNCTION public.set_updated_at();
+
+ALTER TABLE public.diagnostics
+  ADD COLUMN IF NOT EXISTS guide_id uuid NULL;
+
+ALTER TABLE public.diagnostics
+  ADD CONSTRAINT fk_diagnostics_guide
+  FOREIGN KEY (guide_id) REFERENCES public.guides(id)
+  ON DELETE SET NULL;
+
+CREATE INDEX IF NOT EXISTS idx_diagnostics_guide_id_created
+  ON public.diagnostics (guide_id, created_at DESC);
