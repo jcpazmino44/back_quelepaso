@@ -18,8 +18,13 @@ const getCategoryBySlug = async (slug) => {
   return categoryModel.findBySlug(slug);
 };
 
+const listWithGuideCounts = async ({ isQuick } = {}) => {
+  return categoryModel.listWithGuideCounts({ isQuick });
+};
+
 module.exports = {
   listCategories,
   getCategoryById,
-  getCategoryBySlug
+  getCategoryBySlug,
+  listWithGuideCounts
 };

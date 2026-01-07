@@ -1,8 +1,9 @@
 const express = require('express');
-const { list } = require('../controllers/category.controller');
+const { list, listWithGuides } = require('../controllers/category.controller');
 
 const router = express.Router();
 
+router.get('/with-guides', listWithGuides);
 router.get('/', list);
 
 module.exports = router;

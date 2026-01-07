@@ -42,8 +42,45 @@ const listActive = async ({ isQuick } = {}) => {
   return result.rows;
 };
 
+const listWithGuideCounts = async ({ isQuick } = {}) => {
+  const values = [];
+  let whereClause = 'WHERE c.is_active = true';
+  if (isQuick !== undefined) {
+    values.push(Boolean(isQuick));
+    whereClause += ` AND c.is_quick = $${values.length}`;
+  }
+  const result = await db.query(
+    `
+      SELECT
+        c.id,
+        c.slug,
+        c.name,
+        c.description,
+        c.icon,
+        c.image_url,
+        c.tint_color,
+        c.bg_color,
+        c.is_quick,
+        c.order_index,
+        c.is_active,
+        c.created_at,
+        c.updated_at,
+        COUNT(DISTINCT g.id)::int AS guides_count
+      FROM categories c
+      LEFT JOIN guide_categories gc ON gc.category_id = c.id
+      LEFT JOIN guides g ON g.id = gc.guide_id AND g.is_active = true
+      ${whereClause}
+      GROUP BY c.id
+      ORDER BY c.order_index ASC, c.name ASC
+    `,
+    values
+  );
+  return result.rows;
+};
+
 module.exports = {
   findById,
   findBySlug,
-  listActive
+  listActive,
+  listWithGuideCounts
 };
