@@ -164,11 +164,19 @@ const resolveCategory = async ({ categoryId, categorySlug }) => {
   return null;
 };
 
-const resolveGuide = async ({ guideId, guideSlug }) => {
+const resolveGuide = async ({ guideId, guideSlug, categorySlug }) => {
   if (guideId) {
     return { id: guideId };
   }
   if (guideSlug) {
+    const normalizedGuideSlug = String(guideSlug).trim().toLowerCase();
+    if (normalizedGuideSlug === 'otro') {
+      if (!categorySlug) {
+        return null;
+      }
+      const guide = await guideModel.findMostCompleteByCategorySlug(categorySlug);
+      return guide ? { id: guide.id, slug: guide.slug } : null;
+    }
     const guide = await guideModel.findBySlug({ slug: guideSlug, isActive: true });
     return guide ? { id: guide.id, slug: guide.slug } : null;
   }
@@ -206,7 +214,11 @@ const createDiagnostic = async ({
 
   const { riskLevel, possibleCause } = resolveDiagnostic(normalizedCategory, inputText);
 
-  const guideRecord = await resolveGuide({ guideId, guideSlug });
+  const guideRecord = await resolveGuide({
+    guideId,
+    guideSlug,
+    categorySlug: categoryRecord.slug
+  });
   if ((guideId || guideSlug) && !guideRecord) {
     const error = new Error('guide is invalid');
     error.status = 400;

@@ -183,6 +183,27 @@ const listToolsByGuideId = async (guideId) => {
   return result.rows;
 };
 
+const findMostCompleteByCategorySlug = async (categorySlug) => {
+  const result = await db.query(
+    `
+      SELECT
+        g.id,
+        g.slug,
+        COUNT(gs.id)::int AS steps_count
+      FROM guides g
+      INNER JOIN guide_categories gc ON gc.guide_id = g.id
+      INNER JOIN categories c ON c.id = gc.category_id
+      LEFT JOIN guide_steps gs ON gs.guide_id = g.id
+      WHERE g.is_active = true AND lower(c.slug) = lower($1)
+      GROUP BY g.id
+      ORDER BY steps_count DESC, g.created_at DESC
+      LIMIT 1
+    `,
+    [categorySlug]
+  );
+  return result.rows[0] || null;
+};
+
 module.exports = {
   findBySlug,
   listActive,
@@ -190,5 +211,6 @@ module.exports = {
   listByCategorySlug,
   countByCategorySlug,
   listStepsByGuideId,
-  listToolsByGuideId
+  listToolsByGuideId,
+  findMostCompleteByCategorySlug
 };
