@@ -2,22 +2,22 @@ const db = require('../config/db');
 
 const baseSelect = `
   SELECT
-    id,
-    slug,
-    title,
-    summary,
-    duration_minutes,
-    difficulty_level,
-    safety_title,
-    safety_text,
-    success_title,
-    success_text,
-    cover_image_url,
-    is_active,
-    version,
-    created_at,
-    updated_at
-  FROM guides
+    g.id,
+    g.slug,
+    g.title,
+    g.summary,
+    g.duration_minutes,
+    g.difficulty_level,
+    g.safety_title,
+    g.safety_text,
+    g.success_title,
+    g.success_text,
+    g.cover_image_url,
+    g.is_active,
+    g.version,
+    g.created_at,
+    g.updated_at
+  FROM guides g
 `;
 
 const findBySlug = async ({ slug, isActive = true } = {}) => {
@@ -25,9 +25,9 @@ const findBySlug = async ({ slug, isActive = true } = {}) => {
     return null;
   }
   const values = [slug];
-  let whereClause = 'WHERE lower(slug) = lower($1)';
+  let whereClause = 'WHERE lower(g.slug) = lower($1)';
   if (isActive) {
-    whereClause += ' AND is_active = true';
+    whereClause += ' AND g.is_active = true';
   }
   const result = await db.query(`${baseSelect} ${whereClause} LIMIT 1`, values);
   return result.rows[0] || null;
@@ -35,26 +35,26 @@ const findBySlug = async ({ slug, isActive = true } = {}) => {
 
 const buildGuideFilters = ({ q, difficulty, minMinutes, maxMinutes } = {}) => {
   const values = [];
-  const clauses = ['is_active = true'];
+  const clauses = ['g.is_active = true'];
 
   if (q) {
     values.push(`%${q}%`);
-    clauses.push(`(title ILIKE $${values.length} OR summary ILIKE $${values.length})`);
+    clauses.push(`(g.title ILIKE $${values.length} OR g.summary ILIKE $${values.length})`);
   }
 
   if (difficulty) {
     values.push(difficulty);
-    clauses.push(`difficulty_level = $${values.length}`);
+    clauses.push(`g.difficulty_level = $${values.length}`);
   }
 
   if (minMinutes !== null && minMinutes !== undefined) {
     values.push(minMinutes);
-    clauses.push(`duration_minutes >= $${values.length}`);
+    clauses.push(`g.duration_minutes >= $${values.length}`);
   }
 
   if (maxMinutes !== null && maxMinutes !== undefined) {
     values.push(maxMinutes);
-    clauses.push(`duration_minutes <= $${values.length}`);
+    clauses.push(`g.duration_minutes <= $${values.length}`);
   }
 
   return {
@@ -84,7 +84,7 @@ const listActive = async ({
     `
       ${baseSelect}
       ${whereClause}
-      ORDER BY created_at DESC
+      ORDER BY g.created_at DESC
       LIMIT $${values.length - 1} OFFSET $${values.length}
     `,
     values
@@ -102,7 +102,7 @@ const countActive = async ({ q, difficulty, minMinutes, maxMinutes } = {}) => {
   const result = await db.query(
     `
       SELECT COUNT(*)::int AS total
-      FROM guides
+      FROM guides g
       ${whereClause}
     `,
     values
@@ -115,10 +115,10 @@ const listByCategorySlug = async ({ categorySlug, limit = 20, offset = 0 } = {})
   const result = await db.query(
     `
       ${baseSelect}
-      INNER JOIN guide_categories gc ON gc.guide_id = guides.id
+      INNER JOIN guide_categories gc ON gc.guide_id = g.id
       INNER JOIN categories c ON c.id = gc.category_id
-      WHERE guides.is_active = true AND lower(c.slug) = lower($1)
-      ORDER BY guides.created_at DESC
+      WHERE g.is_active = true AND lower(c.slug) = lower($1)
+      ORDER BY g.created_at DESC
       LIMIT $2 OFFSET $3
     `,
     values
