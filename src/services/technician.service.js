@@ -1,13 +1,13 @@
 const technicianModel = require('../models/technician.model');
 
-const listByCity = async (city) => {
+const listByCity = async (city, categorySlug) => {
   if (!city) {
     const error = new Error('city is required');
     error.status = 400;
     throw error;
   }
 
-  const rows = await technicianModel.findActiveByCity(city);
+  const rows = await technicianModel.findActiveByCity(city, categorySlug);
   return rows.map((row) => ({
     id: row.id,
     name: row.name,
