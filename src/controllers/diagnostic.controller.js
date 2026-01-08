@@ -1,4 +1,12 @@
 const diagnosticService = require('../services/diagnostic.service');
+const historyService = require('../services/history.service');
+
+const STATUS_VALUES = new Set([
+  'solucionado',
+  'pendiente',
+  'revisado',
+  'cancelado'
+]);
 
 const create = async (req, res, next) => {
   try {
@@ -61,6 +69,39 @@ const create = async (req, res, next) => {
   }
 };
 
+const updateStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const diagnosticId = Number(id);
+
+    if (!Number.isInteger(diagnosticId)) {
+      return res.status(400).json({ error: 'diagnostic_id must be an integer' });
+    }
+
+    if (!status || !STATUS_VALUES.has(status)) {
+      return res.status(400).json({ error: 'status must be a valid enum value' });
+    }
+
+    const updated = await historyService.updateStatusByDiagnosticId({
+      diagnosticId,
+      status
+    });
+
+    if (!updated) {
+      return res.status(404).json({ error: 'diagnostic not found in history' });
+    }
+
+    res.json({
+      diagnosticId: updated.diagnostic_id,
+      status: updated.status
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
-  create
+  create,
+  updateStatus
 };

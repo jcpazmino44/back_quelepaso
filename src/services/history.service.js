@@ -7,6 +7,11 @@ const listHistory = async (userId) => {
   return historyModel.findAll();
 };
 
+const updateStatusByDiagnosticId = async ({ diagnosticId, status }) => {
+  return historyModel.updateStatusByDiagnosticId({ diagnosticId, status });
+};
+
 module.exports = {
-  listHistory
+  listHistory,
+  updateStatusByDiagnosticId
 };

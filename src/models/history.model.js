@@ -46,7 +46,21 @@ const findAll = async () => {
   return result.rows;
 };
 
+const updateStatusByDiagnosticId = async ({ diagnosticId, status }) => {
+  const result = await db.query(
+    `
+      UPDATE history
+      SET status = $1
+      WHERE diagnostic_id = $2
+      RETURNING id, diagnostic_id, status, created_at
+    `,
+    [status, diagnosticId]
+  );
+  return result.rows[0] || null;
+};
+
 module.exports = {
   findByUserId,
-  findAll
+  findAll,
+  updateStatusByDiagnosticId
 };

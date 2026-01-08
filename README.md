@@ -32,6 +32,7 @@ ALTER TABLE users
 - `GET /api/technicians?city=&categorySlug=` -> `[{ id, name, role, zone, phone, rating, reviewsCount }]`
 - `GET /api/technicians/cities` -> `["Bogota", "Medellin", ...]`
 - `POST /api/diagnostics` { category, inputText?, imageUrl?, userId? } -> `{ id, possibleCause, riskLevel, createdAt }`
+- `PATCH /api/diagnostics/:id/status` { status } -> `{ diagnosticId, status }`
 - `GET /api/history?userId=` -> `[{ id, title, category, status, createdAt }]`
 
 ## utilizar endpoints en el  front
@@ -47,6 +48,9 @@ Puedes decirle al front que use estos endpoints (base URL configurable, ej. `htt
 - `POST /api/diagnostics`
   - Body JSON: `{ category, inputText?, imageUrl?, userId? }`
   - Respuesta: `{ id, possibleCause, riskLevel, createdAt }`
+- `PATCH /api/diagnostics/123/status`
+  - Body JSON: `{ status: "pendiente" | "revisado" | "solucionado" | "cancelado" }`
+  - Respuesta: `{ diagnosticId: 123, status: "revisado" }`
 - `GET /api/history?userId=1` (o sin `userId` para general)
   - Respuesta: `[{ id, title, category, status, createdAt }]`
 
