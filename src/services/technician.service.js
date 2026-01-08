@@ -19,6 +19,14 @@ const listByCity = async (city) => {
   }));
 };
 
+const listCities = async () => {
+  const rows = await technicianModel.listActiveCities();
+  return rows
+    .map((row) => row.city)
+    .filter((city) => city);
+};
+
 module.exports = {
-  listByCity
+  listByCity,
+  listCities
 };

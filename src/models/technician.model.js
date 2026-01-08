@@ -8,6 +8,20 @@ const findActiveByCity = async (city) => {
   return result.rows;
 };
 
+const listActiveCities = async () => {
+  const result = await db.query(
+    `
+      SELECT DISTINCT city
+      FROM technicians
+      WHERE active = true
+        AND city IS NOT NULL
+      ORDER BY city ASC
+    `
+  );
+  return result.rows;
+};
+
 module.exports = {
-  findActiveByCity
+  findActiveByCity,
+  listActiveCities
 };

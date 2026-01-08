@@ -10,6 +10,16 @@ const listByCity = async (req, res, next) => {
   }
 };
 
+const listCities = async (req, res, next) => {
+  try {
+    const cities = await technicianService.listCities();
+    res.json(cities);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
-  listByCity
+  listByCity,
+  listCities
 };
