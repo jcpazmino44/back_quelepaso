@@ -1,10 +1,10 @@
 # Backend QueLePaso
 
-Backend Node.js + MySQL para la app QueLePaso. Estructura basada en la arquitectura solicitada (controllers, services, models, routes, middlewares, config).
+Backend Node.js + Postgres para la app QueLePaso. Estructura basada en la arquitectura solicitada (controllers, services, models, routes, middlewares, config).
 
 ## Requisitos
 - Node.js 18+
-- MySQL 8+
+- Postgres 13+
 
 ## Setup rapido
 1. Copia variables de entorno:
@@ -17,6 +17,7 @@ Backend Node.js + MySQL para la app QueLePaso. Estructura basada en la arquitect
 ## Notas de base de datos
 - El esquema base esta en `docs/bd_quelepaso.sql`.
 - Para autenticacion, se requiere una columna `password_hash` en `users`.
+- Para filtrar tecnicos por categoria se requiere la tabla puente `technician_categories` (relacion muchos a muchos con `technicians` y `categories`).
 
 Ejemplo:
 ```
@@ -28,7 +29,8 @@ ALTER TABLE users
 - `POST /api/auth/register` { full_name?, phone, password }
 - `POST /api/auth/login` { phone, password }
 - `GET /api/health`
-- `GET /api/technicians?city=` -> `[{ id, name, role, zone, phone, rating, reviewsCount }]`
+- `GET /api/technicians?city=&categorySlug=` -> `[{ id, name, role, zone, phone, rating, reviewsCount }]`
+- `GET /api/technicians/cities` -> `["Bogota", "Medellin", ...]`
 - `POST /api/diagnostics` { category, inputText?, imageUrl?, userId? } -> `{ id, possibleCause, riskLevel, createdAt }`
 - `GET /api/history?userId=` -> `[{ id, title, category, status, createdAt }]`
 
@@ -38,6 +40,10 @@ Puedes decirle al front que use estos endpoints (base URL configurable, ej. `htt
 
 - `GET /api/technicians?city=Bogota`
   - Respuesta: `[{ id, name, role, zone, phone, rating, reviewsCount }]`
+- `GET /api/technicians?city=Bogota&categorySlug=plomeria`
+  - Respuesta: `[{ id, name, role, zone, phone, rating, reviewsCount }]`
+- `GET /api/technicians/cities`
+  - Respuesta: `["Bogota", "Medellin", ...]`
 - `POST /api/diagnostics`
   - Body JSON: `{ category, inputText?, imageUrl?, userId? }`
   - Respuesta: `{ id, possibleCause, riskLevel, createdAt }`
@@ -47,6 +53,7 @@ Puedes decirle al front que use estos endpoints (base URL configurable, ej. `htt
 Notas rapidas para front:
 - Content-Type: `application/json` en POST.
 - Si usan `userId`, es opcional; si no lo mandan, el backend devuelve historial general y en diagnostics guarda `user_id` como `NULL`.
+- `imageUrl` se guarda como string en `diagnostics.image_url` (sin procesamiento en backend). Ver `docs/uso_imagen.md`.
 
 la URL correcta del backend es:
 http://10.0.2.2:3000
