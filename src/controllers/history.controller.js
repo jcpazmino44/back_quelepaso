@@ -7,6 +7,7 @@ const list = async (req, res, next) => {
     res.json(
       history.map((item) => ({
         id: item.id,
+        diagnosticId: item.diagnostic_id,
         title: item.title,
         categoryId: item.category_id,
         category: item.category_slug,

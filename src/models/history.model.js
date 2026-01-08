@@ -5,6 +5,7 @@ const findByUserId = async (userId) => {
     `
       SELECT
         h.id,
+        h.diagnostic_id,
         h.title,
         h.status,
         h.created_at,
@@ -29,6 +30,7 @@ const findAll = async () => {
     `
       SELECT
         h.id,
+        h.diagnostic_id,
         h.title,
         h.status,
         h.created_at,

@@ -52,7 +52,7 @@ Puedes decirle al front que use estos endpoints (base URL configurable, ej. `htt
   - Body JSON: `{ status: "pendiente" | "revisado" | "solucionado" | "cancelado" }`
   - Respuesta: `{ diagnosticId: 123, status: "revisado" }`
 - `GET /api/history?userId=1` (o sin `userId` para general)
-  - Respuesta: `[{ id, title, category, status, createdAt }]`
+  - Respuesta: `[{ id, diagnosticId, title, category, status, createdAt }]`
 
 Notas rapidas para front:
 - Content-Type: `application/json` en POST.
