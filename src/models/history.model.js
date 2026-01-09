@@ -48,6 +48,30 @@ const findAll = async () => {
   return result.rows;
 };
 
+const create = async ({
+  user_id,
+  diagnostic_id,
+  title,
+  category_id,
+  device_id
+}) => {
+  const result = await db.query(
+    `
+      INSERT INTO history (user_id, diagnostic_id, title, category_id, device_id)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING id
+    `,
+    [
+      user_id || null,
+      diagnostic_id,
+      title,
+      category_id,
+      device_id || null
+    ]
+  );
+  return result.rows[0]?.id ?? null;
+};
+
 const updateStatusByDiagnosticId = async ({ diagnosticId, status }) => {
   const result = await db.query(
     `
@@ -64,5 +88,6 @@ const updateStatusByDiagnosticId = async ({ diagnosticId, status }) => {
 module.exports = {
   findByUserId,
   findAll,
+  create,
   updateStatusByDiagnosticId
 };

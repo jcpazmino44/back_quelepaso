@@ -1,6 +1,7 @@
 const diagnosticModel = require('../models/diagnostic.model');
 const categoryModel = require('../models/category.model');
 const guideModel = require('../models/guide.model');
+const historyService = require('./history.service');
 
 const normalizeText = (value) =>
   String(value || '')
@@ -243,10 +244,19 @@ const createDiagnostic = async ({
   }
 
   const trimmedInput = String(inputText || '').trim();
+  const summaryTitle = trimmedInput || `Problema de ${categoryRecord.name}`;
   const riskInfo = RISK_MAP[riskLevel] || {
     label: 'Riesgo medio',
     detail: 'El problema requiere atencion para evitar danos mayores.'
   };
+
+  await historyService.createHistory({
+    userId: userId || null,
+    diagnosticId: record.id,
+    title: summaryTitle,
+    categoryId: categoryRecord.id,
+    deviceId: null
+  });
 
   return {
     ...record,
@@ -255,7 +265,7 @@ const createDiagnostic = async ({
     guide_slug: guideRecord ? guideRecord.slug : record.guide_slug || null,
     risk_label: riskInfo.label,
     risk_detail: riskInfo.detail,
-    summary_title: trimmedInput || `Problema de ${categoryRecord.name}`,
+    summary_title: summaryTitle,
     summary_tag: categoryRecord.name,
     summary_image_url: categoryRecord.image_url || null,
     note: DEFAULT_NOTE
