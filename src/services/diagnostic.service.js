@@ -174,6 +174,10 @@ const resolveCategory = async ({ categoryId, categorySlug }) => {
     return categoryModel.findById(categoryId);
   }
   if (categorySlug) {
+    const directMatch = await categoryModel.findBySlug(categorySlug);
+    if (directMatch) {
+      return directMatch;
+    }
     return categoryModel.findBySlug(normalizeCategory(categorySlug));
   }
   return null;
