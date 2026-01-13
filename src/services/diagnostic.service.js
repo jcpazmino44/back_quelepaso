@@ -16,6 +16,20 @@ const normalizeCategory = (value) => {
   if (key === 'electrodomesticos' || key === 'electrodomestico') return 'electrodomesticos';
   if (key === 'electricidad' || key === 'electrico') return 'electricidad';
   if (key === 'plomeria' || key === 'fontaneria') return 'plomeria';
+  if (key === 'otro') return 'general';
+  if (key.startsWith('electricidad')) return 'electricidad';
+  if (key.startsWith('plomeria') || key.startsWith('fontaneria') || key.startsWith('griferia')) {
+    return 'plomeria';
+  }
+  if (
+    key.startsWith('electro') ||
+    key === 'nevera' ||
+    key === 'lavadora' ||
+    key === 'ventilador'
+  ) {
+    return 'electrodomesticos';
+  }
+  if (key.startsWith('internet') || key.startsWith('wifi')) return 'internet';
   return key;
 };
 
