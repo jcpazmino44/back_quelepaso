@@ -1,6 +1,6 @@
 # Backend QueLePaso
 
-Backend Node.js + Postgres para la app QueLePaso. Estructura basada en la arquitectura solicitada (controllers, services, models, routes, middlewares, config).
+Backend Node.js + Postgres para la app QueLePaso. Arquitectura por capas (controllers, services, models, routes, middlewares, config).
 
 ## Requisitos
 - Node.js 18+
@@ -25,47 +25,47 @@ ALTER TABLE users
   ADD COLUMN password_hash VARCHAR(255) NOT NULL;
 ```
 
-## Endpoints iniciales
+## Endpoints principales
 - `POST /api/auth/register` { full_name?, phone, password }
 - `POST /api/auth/login` { phone, password }
 - `GET /api/health`
+- `GET /api/categories` -> `[{ id, slug, name, ... }]`
+- `GET /api/categories/with-guides` -> `[{ id, slug, guidesCount, ... }]`
 - `GET /api/technicians?city=&categorySlug=` -> `[{ id, name, role, zone, phone, rating, reviewsCount }]`
 - `GET /api/technicians/cities` -> `["Bogota", "Medellin", ...]`
-- `POST /api/diagnostics` { category, inputText?, imageUrl?, userId? } -> `{ id, possibleCause, riskLevel, createdAt }`
+- `GET /api/guides` -> `[{ id, slug, title, summary, durationMinutes, difficultyLevel, coverImageUrl }]`
+- `GET /api/guides/by-category/:slug` -> `{ category, items, limit, offset, total }`
+- `GET /api/guides/:slug` -> `{ id, slug, title, summary, steps?, tools? }`
+- `POST /api/diagnostics` -> `{ id, categorySlug, categoryInfo, possibleCause, riskLevel, riskLabel, riskDetail, summaryTitle, summaryImageUrl, createdAt }`
 - `PATCH /api/diagnostics/:id/status` { status } -> `{ diagnosticId, status }`
-- `GET /api/history?userId=` -> `[{ id, title, category, status, createdAt }]`
+- `GET /api/history?userId=` -> `[{ id, diagnosticId, title, category, status, createdAt }]`
 
-## utilizar endpoints en el  front
+## Uso desde el front
 
-Puedes decirle al front que use estos endpoints (base URL configurable, ej. `http://10.0.2.2:3000`):
+Base URL configurable, ej. `http://10.0.2.2:3000`.
 
-- `GET /api/technicians?city=Bogota`
-  - Respuesta: `[{ id, name, role, zone, phone, rating, reviewsCount }]`
-- `GET /api/technicians?city=Bogota&categorySlug=plomeria`
-  - Respuesta: `[{ id, name, role, zone, phone, rating, reviewsCount }]`
-- `GET /api/technicians/cities`
-  - Respuesta: `["Bogota", "Medellin", ...]`
+Diagnostico:
 - `POST /api/diagnostics`
-  - Body JSON: `{ category, inputText?, imageUrl?, userId? }`
-  - Respuesta: `{ id, possibleCause, riskLevel, createdAt }`
-- `PATCH /api/diagnostics/123/status`
-  - Body JSON: `{ status: "pendiente" | "revisado" | "solucionado" | "cancelado" }`
-  - Respuesta: `{ diagnosticId: 123, status: "revisado" }`
-- `GET /api/history?userId=1` (o sin `userId` para general)
-  - Respuesta: `[{ id, diagnosticId, title, category, status, createdAt }]`
+  - Body JSON o `multipart/form-data` (solo campos, sin archivo).
+  - Campos aceptados:
+    - `categoryId` o `categorySlug` (tambien acepta `category` como alias de slug).
+    - `guideId` o `guideSlug` (opcional).
+    - `inputText`, `imageUrl`, `userId` (opcionales).
 
-Notas rapidas para front:
-- Content-Type: `application/json` en POST.
-- Si usan `userId`, es opcional; si no lo mandan, el backend devuelve historial general y en diagnostics guarda `user_id` como `NULL`.
+Guia sugerida por categoria:
+- `GET /api/guides/by-category/electricidad-basica`
+
+Detalle de guia:
+- `GET /api/guides/breaker-se-baja?include_steps=true&include_tools=true`
+
+Notas rapidas:
 - `imageUrl` se guarda como string en `diagnostics.image_url` (sin procesamiento en backend). Ver `docs/uso_imagen.md`.
+- `userId` es opcional; si no se manda, el backend guarda `user_id` como `NULL`.
 
-la URL correcta del backend es:
-http://10.0.2.2:3000
-
-## Migracion a Postgres para utilizar Render
+## Migracion a Postgres para usar Render
 Tareas realizadas:
-- Cambiar el driver MySQL → PostgreSQL (`mysql2` por `pg`).
-- Ajustar la conexion para usar `DATABASE_URL` y SSL (requerido por Render).
-- Actualizar consultas para usar placeholders `$1` y `active = true`.
+- Cambiar el driver MySQL -> PostgreSQL (`mysql2` por `pg`).
+- Ajustar la conexion para usar `DATABASE_URL` y SSL.
+- Actualizar consultas para usar placeholders `$1`.
 - Ajustar inserts para usar `RETURNING id` en lugar de `insertId`.
 - Actualizar variables de entorno locales para Postgres.

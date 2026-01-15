@@ -262,6 +262,13 @@ const createDiagnostic = async ({
   }
 
   const trimmedInput = String(inputText || '').trim();
+  let summaryImageUrl = categoryRecord.image_url || null;
+  if (!summaryImageUrl && normalizedCategory && normalizedCategory !== categoryRecord.slug) {
+    const fallbackCategory = await categoryModel.findBySlug(normalizedCategory);
+    if (fallbackCategory?.image_url) {
+      summaryImageUrl = fallbackCategory.image_url;
+    }
+  }
   const summaryTitle = trimmedInput || `Problema de ${categoryRecord.name}`;
   const riskInfo = RISK_MAP[riskLevel] || {
     label: 'Riesgo medio',
@@ -285,7 +292,7 @@ const createDiagnostic = async ({
     risk_detail: riskInfo.detail,
     summary_title: summaryTitle,
     summary_tag: categoryRecord.name,
-    summary_image_url: categoryRecord.image_url || null,
+    summary_image_url: summaryImageUrl,
     note: DEFAULT_NOTE
   };
 };
