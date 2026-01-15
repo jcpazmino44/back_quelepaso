@@ -87,6 +87,9 @@ Request:
 - guide_opened
 - guide_step_viewed
 - guide_completed
+- funnel_step
+- funnel_exit
+- category_selected
 - technicians_list_viewed
 - technician_contact_clicked
 - history_viewed

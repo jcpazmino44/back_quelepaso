@@ -23,12 +23,50 @@ BEGIN
       'guide_opened',
       'guide_step_viewed',
       'guide_completed',
+      'funnel_step',
+      'funnel_exit',
+      'category_selected',
       'technicians_list_viewed',
       'technician_contact_clicked',
       'history_viewed',
       'session_started',
       'session_ended'
     );
+  END IF;
+END
+$$;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_type WHERE typname = 'event_name_enum'
+  ) THEN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_enum e
+      JOIN pg_type t ON t.oid = e.enumtypid
+      WHERE t.typname = 'event_name_enum' AND e.enumlabel = 'funnel_step'
+    ) THEN
+      ALTER TYPE event_name_enum ADD VALUE 'funnel_step';
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_enum e
+      JOIN pg_type t ON t.oid = e.enumtypid
+      WHERE t.typname = 'event_name_enum' AND e.enumlabel = 'funnel_exit'
+    ) THEN
+      ALTER TYPE event_name_enum ADD VALUE 'funnel_exit';
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_enum e
+      JOIN pg_type t ON t.oid = e.enumtypid
+      WHERE t.typname = 'event_name_enum' AND e.enumlabel = 'category_selected'
+    ) THEN
+      ALTER TYPE event_name_enum ADD VALUE 'category_selected';
+    END IF;
   END IF;
 END
 $$;
