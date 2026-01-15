@@ -9,6 +9,7 @@ const guideRoutes = require('./guide.routes');
 const healthRoutes = require('./health.routes');
 const historyRoutes = require('./history.routes');
 const metricsRoutes = require('./metrics.routes');
+const surveyRoutes = require('./survey.routes');
 const technicianRoutes = require('./technician.routes');
 const toolRoutes = require('./tool.routes');
 
@@ -23,6 +24,7 @@ router.use('/guides', guideRoutes);
 router.use('/health', healthRoutes);
 router.use('/history', historyRoutes);
 router.use('/metrics', metricsRoutes);
+router.use('/survey-responses', surveyRoutes);
 router.use('/technicians', technicianRoutes);
 router.use('/tools', toolRoutes);
 
