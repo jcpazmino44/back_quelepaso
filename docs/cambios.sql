@@ -1,4 +1,4 @@
--- Iteracion 1 (PostgreSQL): nuevas tablas, nuevos campos e indices recomendados.
+-- Iteracion 1 (PostgreSQL): nuevas tablas, nuevos campos e indices recomendados. para interactuar con analytics 
 
 -- 0) Tipos enum necesarios.
 DO $$
